@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin">
+
+  <meta name="author" content="Jamie Nguyen">
+  <title>Online Certificate Status Protocol &mdash; OpenSSL Certificate Authority &mdash; Jamie Nguyen</title>
+  <meta name="date" content="2015-12-09" />
+
+  <link rel="stylesheet" href="../../css/uakari.274dc1e.css" />
+  <link rel="copyright" title="Copyright" href="copyright.html" />
+  <link rel="next" title="Appendix" href="appendix/index.html" />
+  <link rel="prev" title="Certificate revocation lists" href="certificate-revocation-lists.html" /> 
+
+  <!--[if lt IE 9]>
+  <script src="/js/html5shiv-3.7.2.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<nav id="nav">
+  <div id="nav-header">
+    <div id="nav-title">
+      <a class="fa-book" href="index.html">OpenSSL Certificate Authority</a>
+    </div>
+    <div id="nav-toggle">
+      <span id="toggle-menu" class="fa fa-bars"></span>
+    </div>
+  </div>
+
+  <div id="nav-tree">
+    
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-root-pair.html">Create the root pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-key">Create the root key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">Create the root certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#verify-the-root-certificate">Verify the root certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-intermediate-pair.html">Create the intermediate pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-key">Create the intermediate key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate">Create the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#verify-the-intermediate-certificate">Verify the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-certificate-chain-file">Create the certificate chain file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sign-server-and-client-certificates.html">Sign server and client certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-key">Create a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-certificate">Create a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#verify-the-certificate">Verify the certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#deploy-the-certificate">Deploy the certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="certificate-revocation-lists.html">Certificate revocation lists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#create-the-crl">Create the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#revoke-a-certificate">Revoke a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#server-side-use-of-the-crl">Server-side use of the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#client-side-use-of-the-crl">Client-side use of the CRL</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="online-certificate-status-protocol.html">Online Certificate Status Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#create-the-ocsp-pair">Create the OCSP pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#revoke-a-certificate">Revoke a certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/root-configuration-file.html">Root CA configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendix/intermediate-configuration-file.html">Intermediate CA configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+<section id="content">
+  <div class="grid-3">
+    <div class="grid-3-left"></div>
+
+    <div class="grid-3-center">
+      <div class="content-inner">
+  <div class="section" id="online-certificate-status-protocol">
+<h1>Online Certificate Status Protocol<a class="headerlink" href="online-certificate-status-protocol.html#online-certificate-status-protocol" title="Permalink to this headline">¶</a></h1>
+<p>The Online Certificate Status Protocol (OCSP) was created as an alternative to
+<a class="reference internal" href="certificate-revocation-lists.html"><em>certificate revocation lists</em></a> (CRLs).
+Similar to CRLs, OCSP enables a requesting party (eg, a web browser) to
+determine the revocation state of a certificate.</p>
+<p>When a CA signs a certificate, they will typically include an OCSP server
+address (eg, <code class="docutils literal"><span class="pre">http://ocsp.example.com</span></code>) in the certificate. This is similar in
+function to <code class="docutils literal"><span class="pre">crlDistributionPoints</span></code> used for CRLs.</p>
+<p>As an example, when a web browser is presented with a server certificate, it
+will send a query to the OCSP server address specified in the certificate. At
+this address, an OCSP responder listens to queries and responds with the
+revocation status of the certificate.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It’s recommended to use OCSP instead where possible, though realistically you
+will tend to only need OCSP for website certificates. Some web browsers have
+deprecated or removed support for CRLs.</p>
+</div>
+<div class="section" id="prepare-the-configuration-file">
+<h2>Prepare the configuration file<a class="headerlink" href="online-certificate-status-protocol.html#prepare-the-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>To use OCSP, the CA must encode the OCSP server location into the certificates
+that it signs. Use the <code class="docutils literal"><span class="pre">authorityInfoAccess</span></code> option in the appropriate
+sections, which in our case means the <code class="docutils literal"><span class="pre">[</span> <span class="pre">server_cert</span> <span class="pre">]</span></code> section.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> server_cert <span class="o">]</span>
+<span class="c"># ... snipped ...</span>
+<span class="nv">authorityInfoAccess</span> <span class="o">=</span> OCSP<span class="p">;</span>URI:http://ocsp.example.com
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-the-ocsp-pair">
+<h2>Create the OCSP pair<a class="headerlink" href="online-certificate-status-protocol.html#create-the-ocsp-pair" title="Permalink to this headline">¶</a></h2>
+<p>The OCSP responder requires a cryptographic pair for signing the response that
+it sends to the requesting party. The OCSP cryptographic pair must be signed by
+the same CA that signed the certificate being checked.</p>
+<p>Create a private key and encrypt it with AES-256 encryption.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> genrsa -aes256 <span class="ow">\</span><span class="go"></span>
+      -out intermediate/private/ocsp.example.com.key.pem <span class="m">4096</span><span class="go"></span>
+</pre></div>
+</div>
+<p>Create a certificate signing request (CSR). The details should generally match
+those of the signing CA. The <strong>Common Name</strong>, however, must be a fully qualified
+domain name.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> req -config intermediate/openssl.cnf -new -sha256 <span class="ow">\</span><span class="go"></span>
+      -key intermediate/private/ocsp.example.com.key.pem <span class="ow">\</span><span class="go"></span>
+      -out intermediate/csr/ocsp.example.com.csr.pem<span class="go"></span>
+
+<span class="go">Enter pass phrase for intermediate.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">You are about to be asked to enter information that will be incorporated</span>
+<span class="go">into your certificate request.</span>
+<span class="go">-----</span>
+<span class="go">Country Name (2 letter code) [XX]:</span><span class="s">GB</span><span class="go"></span>
+<span class="go">State or Province Name []:</span><span class="s">England</span><span class="go"></span>
+<span class="go">Locality Name []:</span>
+<span class="go">Organization Name []:</span><span class="s">Alice Ltd</span><span class="go"></span>
+<span class="go">Organizational Unit Name []:</span><span class="s">Alice Ltd Certificate Authority</span><span class="go"></span>
+<span class="go">Common Name []:</span><span class="s">ocsp.example.com</span><span class="go"></span>
+<span class="go">Email Address []:</span>
+</pre></div>
+</div>
+<p>Sign the CSR with the intermediate CA.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -extensions ocsp -days <span class="m">375</span> -notext -md sha256 <span class="ow">\</span><span class="go"></span>
+      -in intermediate/csr/ocsp.example.com.csr.pem <span class="ow">\</span><span class="go"></span>
+      -out intermediate/certs/ocsp.example.com.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>Verify that the certificate has the correct <strong>X509v3 extensions</strong>.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> x509 -noout -text <span class="ow">\</span><span class="go"></span>
+      -in intermediate/certs/ocsp.example.com.cert.pem<span class="go"></span>
+
+    X509v3 Key Usage: critical<span class="go"></span>
+        Digital Signature<span class="go"></span>
+    X509v3 Extended Key Usage: critical<span class="go"></span>
+        OCSP Signing<span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="revoke-a-certificate">
+<h2>Revoke a certificate<a class="headerlink" href="online-certificate-status-protocol.html#revoke-a-certificate" title="Permalink to this headline">¶</a></h2>
+<p>The OpenSSL <code class="docutils literal"><span class="pre">ocsp</span></code> tool can act as an OCSP responder, but it’s only intended
+for testing. Production ready OCSP responders exist, but those are beyond the
+scope of this guide.</p>
+<p>Create a server certificate to test.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> genrsa -out intermediate/private/test.example.com.key.pem <span class="m">2048</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> req -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -key intermediate/private/test.example.com.key.pem <span class="ow">\</span><span class="go"></span>
+      -new -sha256 -out intermediate/csr/test.example.com.csr.pem<span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -extensions server_cert -days <span class="m">375</span> -notext -md sha256 <span class="ow">\</span><span class="go"></span>
+      -in intermediate/csr/test.example.com.csr.pem <span class="ow">\</span><span class="go"></span>
+      -out intermediate/certs/test.example.com.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>Run the OCSP responder on <code class="docutils literal"><span class="pre">localhost</span></code>. Rather than storing revocation status
+in a separate CRL file, the OCSP responder reads <code class="docutils literal"><span class="pre">index.txt</span></code> directly. The
+response is signed with the OCSP cryptographic pair (using the <code class="docutils literal"><span class="pre">-rkey</span></code> and
+<code class="docutils literal"><span class="pre">-rsigner</span></code> options).</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> ocsp -port 127.0.0.1:2560 -text -sha256 <span class="ow">\</span><span class="go"></span>
+      -index intermediate/index.txt <span class="ow">\</span><span class="go"></span>
+      -CA intermediate/certs/ca-chain.cert.pem <span class="ow">\</span><span class="go"></span>
+      -rkey intermediate/private/ocsp.example.com.key.pem <span class="ow">\</span><span class="go"></span>
+      -rsigner intermediate/certs/ocsp.example.com.cert.pem <span class="ow">\</span><span class="go"></span>
+      -nrequest <span class="m">1</span><span class="go"></span>
+
+<span class="go">Enter pass phrase for ocsp.example.com.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+</pre></div>
+</div>
+<p>In another terminal, send a query to the OCSP responder. The <code class="docutils literal"><span class="pre">-cert</span></code> option
+specifies the certificate to query.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> ocsp -CAfile intermediate/certs/ca-chain.cert.pem <span class="ow">\</span><span class="go"></span>
+      -url http://127.0.0.1:2560 -resp_text <span class="ow">\</span><span class="go"></span>
+      -issuer intermediate/certs/intermediate.cert.pem <span class="ow">\</span><span class="go"></span>
+      -cert intermediate/certs/test.example.com.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>The start of the output shows:</p>
+<ul class="simple">
+<li>whether a successful response was received (<code class="docutils literal"><span class="pre">OCSP</span> <span class="pre">Response</span> <span class="pre">Status</span></code>)</li>
+<li>the identity of the responder (<code class="docutils literal"><span class="pre">Responder</span> <span class="pre">Id</span></code>)</li>
+<li>the revocation status of the certificate (<code class="docutils literal"><span class="pre">Cert</span> <span class="pre">Status</span></code>)</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>OCSP Response Data:
+    OCSP Response Status: successful (0x0)
+    Response Type: Basic OCSP Response
+    Version: 1 (0x0)
+    Responder Id: ... CN = ocsp.example.com
+    Produced At: Apr 11 12:59:51 2015 GMT
+    Responses:
+    Certificate ID:
+      Hash Algorithm: sha1
+      Issuer Name Hash: E35979B6D0A973EBE8AEDED75D8C27D67D2A0334
+      Issuer Key Hash: 69E8EC547F252360E5B6E77261F1D4B921D445E9
+      Serial Number: 1003
+    Cert Status: good
+    This Update: Apr 11 12:59:51 2015 GMT
+</pre></div>
+</div>
+<p>Revoke the certificate.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -revoke intermediate/certs/test.example.com.cert.pem<span class="go"></span>
+
+<span class="go">Enter pass phrase for intermediate.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">Revoking Certificate 1003.</span>
+<span class="go">Data Base Updated</span>
+</pre></div>
+</div>
+<p>As before, run the OCSP responder and on another terminal send a query. This
+time, the output shows <code class="docutils literal"><span class="pre">Cert</span> <span class="pre">Status:</span> <span class="pre">revoked</span></code> and a <code class="docutils literal"><span class="pre">Revocation</span> <span class="pre">Time</span></code>.</p>
+<div class="highlight-text"><div class="highlight"><pre>OCSP Response Data:
+    OCSP Response Status: successful (0x0)
+    Response Type: Basic OCSP Response
+    Version: 1 (0x0)
+    Responder Id: ... CN = ocsp.example.com
+    Produced At: Apr 11 13:03:00 2015 GMT
+    Responses:
+    Certificate ID:
+      Hash Algorithm: sha1
+      Issuer Name Hash: E35979B6D0A973EBE8AEDED75D8C27D67D2A0334
+      Issuer Key Hash: 69E8EC547F252360E5B6E77261F1D4B921D445E9
+      Serial Number: 1003
+    Cert Status: revoked
+    Revocation Time: Apr 11 13:01:09 2015 GMT
+    This Update: Apr 11 13:03:00 2015 GMT
+</pre></div>
+</div>
+</div>
+</div>
+
+
+
+        <div class="footer">
+          <div class="comments">
+            <p>
+              <a href="https://discourse.jamielinux.com/t/openssl-certificate-authority/">Comments <span class="fa fa-fw fa-comments"></span></a>
+            </p>
+          </div>
+          <nav class="footer-nav">
+            <a href="certificate-revocation-lists.html" class="button button-prev" title="Certificate revocation lists"><span class="fa fa-fw fa-long-arrow-left"></span> Previous</a>
+            <a href="appendix/index.html" class="button button-next" title="Appendix">Next <span class="fa fa-fw fa-long-arrow-right"></span></a>
+          </nav>
+
+          <div class="footer-info">
+              <p>
+              <a href="changelog.html">Version 1.0.4</a> &mdash; Last updated on 2015-12-09.
+              </p>
+            <p>
+                &copy; <a href="copyright.html">Copyright</a> 2013-2015, <a href="../../index.html">Jamie Nguyen</a>.
+              Created with Sphinx using a custom-built theme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3-right"></div>
+  </div>
+</section>
+
+<!--[if gt IE 8]><!--> <script src="../../js/uakari.2d61aaf.js"></script> <!--<![endif]-->
+
+</body>
+</html>

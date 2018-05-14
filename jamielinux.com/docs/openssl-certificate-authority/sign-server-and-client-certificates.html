@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin">
+
+  <meta name="author" content="Jamie Nguyen">
+  <title>Sign server and client certificates &mdash; OpenSSL Certificate Authority &mdash; Jamie Nguyen</title>
+  <meta name="date" content="2015-12-09" />
+
+  <link rel="stylesheet" href="../../css/uakari.274dc1e.css" />
+  <link rel="copyright" title="Copyright" href="copyright.html" />
+  <link rel="next" title="Certificate revocation lists" href="certificate-revocation-lists.html" />
+  <link rel="prev" title="Create the intermediate pair" href="create-the-intermediate-pair.html" /> 
+
+  <!--[if lt IE 9]>
+  <script src="/js/html5shiv-3.7.2.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<nav id="nav">
+  <div id="nav-header">
+    <div id="nav-title">
+      <a class="fa-book" href="index.html">OpenSSL Certificate Authority</a>
+    </div>
+    <div id="nav-toggle">
+      <span id="toggle-menu" class="fa fa-bars"></span>
+    </div>
+  </div>
+
+  <div id="nav-tree">
+    
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-root-pair.html">Create the root pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-key">Create the root key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">Create the root certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#verify-the-root-certificate">Verify the root certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-intermediate-pair.html">Create the intermediate pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-key">Create the intermediate key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate">Create the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#verify-the-intermediate-certificate">Verify the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-certificate-chain-file">Create the certificate chain file</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="sign-server-and-client-certificates.html">Sign server and client certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-key">Create a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-certificate">Create a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#verify-the-certificate">Verify the certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#deploy-the-certificate">Deploy the certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="certificate-revocation-lists.html">Certificate revocation lists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#create-the-crl">Create the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#revoke-a-certificate">Revoke a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#server-side-use-of-the-crl">Server-side use of the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#client-side-use-of-the-crl">Client-side use of the CRL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="online-certificate-status-protocol.html">Online Certificate Status Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#create-the-ocsp-pair">Create the OCSP pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#revoke-a-certificate">Revoke a certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/root-configuration-file.html">Root CA configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendix/intermediate-configuration-file.html">Intermediate CA configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+<section id="content">
+  <div class="grid-3">
+    <div class="grid-3-left"></div>
+
+    <div class="grid-3-center">
+      <div class="content-inner">
+  <div class="section" id="sign-server-and-client-certificates">
+<h1>Sign server and client certificates<a class="headerlink" href="sign-server-and-client-certificates.html#sign-server-and-client-certificates" title="Permalink to this headline">¶</a></h1>
+<p>We will be signing certificates using our intermediate CA. You can use these
+signed certificates in a variety of situations, such as to secure connections to
+a web server or to authenticate clients connecting to a service.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The steps below are from your perspective as the certificate authority. A
+third-party, however, can instead create their own private key and
+certificate signing request (CSR) without revealing their private key to
+you. They give you their CSR, and you give back a signed certificate. In
+that scenario, skip the <code class="docutils literal"><span class="pre">genrsa</span></code> and <code class="docutils literal"><span class="pre">req</span></code> commands.</p>
+</div>
+<div class="section" id="create-a-key">
+<h2>Create a key<a class="headerlink" href="sign-server-and-client-certificates.html#create-a-key" title="Permalink to this headline">¶</a></h2>
+<p>Our root and intermediate pairs are 4096 bits. Server and client certificates
+normally expire after one year, so we can safely use 2048 bits instead.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although 4096 bits is slightly more secure than 2048 bits, it slows down TLS
+handshakes and significantly increases processor load during handshakes. For
+this reason, most websites use 2048-bit pairs.</p>
+</div>
+<p>If you’re creating a cryptographic pair for use with a web server (eg,
+Apache), you’ll need to enter this password every time you restart the web
+server. You may want to omit the <code class="docutils literal"><span class="pre">-aes256</span></code> option to create a key without a
+password.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> genrsa -aes256 <span class="ow">\</span><span class="go"></span>
+      -out intermediate/private/www.example.com.key.pem <span class="m">2048</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">chmod</span> <span class="m">400</span> intermediate/private/www.example.com.key.pem<span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-certificate">
+<h2>Create a certificate<a class="headerlink" href="sign-server-and-client-certificates.html#create-a-certificate" title="Permalink to this headline">¶</a></h2>
+<p>Use the private key to create a certificate signing request (CSR). The CSR
+details don’t need to match the intermediate CA. For server certificates, the
+<strong>Common Name</strong> must be a fully qualified domain name (eg, <code class="docutils literal"><span class="pre">www.example.com</span></code>),
+whereas for client certificates it can be any unique identifier (eg, an e-mail
+address). Note that the <strong>Common Name</strong> cannot be the same as either your root
+or intermediate certificate.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> req -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -key intermediate/private/www.example.com.key.pem <span class="ow">\</span><span class="go"></span>
+      -new -sha256 -out intermediate/csr/www.example.com.csr.pem<span class="go"></span>
+
+<span class="go">Enter pass phrase for www.example.com.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">You are about to be asked to enter information that will be incorporated</span>
+<span class="go">into your certificate request.</span>
+<span class="go">-----</span>
+<span class="go">Country Name (2 letter code) [XX]:</span><span class="s">US</span><span class="go"></span>
+<span class="go">State or Province Name []:</span><span class="s">California</span><span class="go"></span>
+<span class="go">Locality Name []:</span><span class="s">Mountain View</span><span class="go"></span>
+<span class="go">Organization Name []:</span><span class="s">Alice Ltd</span><span class="go"></span>
+<span class="go">Organizational Unit Name []:</span><span class="s">Alice Ltd Web Services</span><span class="go"></span>
+<span class="go">Common Name []:</span><span class="s">www.example.com</span><span class="go"></span>
+<span class="go">Email Address []:</span>
+</pre></div>
+</div>
+<p>To create a certificate, use the intermediate CA to sign the CSR. If the
+certificate is going to be used on a server, use the <code class="docutils literal"><span class="pre">server_cert</span></code> extension.
+If the certificate is going to be used for user authentication, use the
+<code class="docutils literal"><span class="pre">usr_cert</span></code> extension. Certificates are usually given a validity of one year,
+though a CA will typically give a few days extra for convenience.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -extensions server_cert -days <span class="m">375</span> -notext -md sha256 <span class="ow">\</span><span class="go"></span>
+      -in intermediate/csr/www.example.com.csr.pem <span class="ow">\</span><span class="go"></span>
+      -out intermediate/certs/www.example.com.cert.pem<span class="go"></span>
+<span class="gp"># </span><span class="gs">chmod</span> <span class="m">444</span> intermediate/certs/www.example.com.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">intermediate/index.txt</span></code> file should contain a line referring to this new
+certificate.</p>
+<div class="highlight-text"><div class="highlight"><pre>V 160420124233Z 1000 unknown ... /CN=www.example.com
+</pre></div>
+</div>
+</div>
+<div class="section" id="verify-the-certificate">
+<h2>Verify the certificate<a class="headerlink" href="sign-server-and-client-certificates.html#verify-the-certificate" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> x509 -noout -text <span class="ow">\</span><span class="go"></span>
+      -in intermediate/certs/www.example.com.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>The <strong>Issuer</strong> is the intermediate CA. The <strong>Subject</strong> refers to the certificate
+itself.</p>
+<div class="highlight-text"><div class="highlight"><pre>Signature Algorithm: sha256WithRSAEncryption
+    Issuer: C=GB, ST=England,
+            O=Alice Ltd, OU=Alice Ltd Certificate Authority,
+            CN=Alice Ltd Intermediate CA
+    Validity
+        Not Before: Apr 11 12:42:33 2015 GMT
+        Not After : Apr 20 12:42:33 2016 GMT
+    Subject: C=US, ST=California, L=Mountain View,
+             O=Alice Ltd, OU=Alice Ltd Web Services,
+             CN=www.example.com
+    Subject Public Key Info:
+        Public Key Algorithm: rsaEncryption
+            Public-Key: (2048 bit)
+</pre></div>
+</div>
+<p>The output will also show the <strong>X509v3 extensions</strong>. When creating the
+certificate, you used either the <code class="docutils literal"><span class="pre">server_cert</span></code> or <code class="docutils literal"><span class="pre">usr_cert</span></code> extension. The
+options from the corresponding configuration section will be reflected in the
+output.</p>
+<div class="highlight-text"><div class="highlight"><pre>X509v3 extensions:
+    X509v3 Basic Constraints:
+        CA:FALSE
+    Netscape Cert Type:
+        SSL Server
+    Netscape Comment:
+        OpenSSL Generated Server Certificate
+    X509v3 Subject Key Identifier:
+        B1:B8:88:48:64:B7:45:52:21:CC:35:37:9E:24:50:EE:AD:58:02:B5
+    X509v3 Authority Key Identifier:
+        keyid:69:E8:EC:54:7F:25:23:60:E5:B6:E7:72:61:F1:D4:B9:21:D4:45:E9
+        DirName:/C=GB/ST=England/O=Alice Ltd/OU=Alice Ltd Certificate Authority/CN=Alice Ltd Root CA
+        serial:10:00
+
+    X509v3 Key Usage: critical
+        Digital Signature, Key Encipherment
+    X509v3 Extended Key Usage:
+        TLS Web Server Authentication
+</pre></div>
+</div>
+<p>Use the CA certificate chain file we created earlier (<code class="docutils literal"><span class="pre">ca-chain.cert.pem</span></code>) to
+verify that the new certificate has a valid chain of trust.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> verify -CAfile intermediate/certs/ca-chain.cert.pem <span class="ow">\</span><span class="go"></span>
+      intermediate/certs/www.example.com.cert.pem<span class="go"></span>
+
+<span class="go">www.example.com.cert.pem:</span><span class="s"> OK</span><span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy-the-certificate">
+<h2>Deploy the certificate<a class="headerlink" href="sign-server-and-client-certificates.html#deploy-the-certificate" title="Permalink to this headline">¶</a></h2>
+<p>You can now either deploy your new certificate to a server, or distribute the
+certificate to a client. When deploying to a server application (eg, Apache),
+you need to make the following files available:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">ca-chain.cert.pem</span></code></li>
+<li><code class="docutils literal"><span class="pre">www.example.com.key.pem</span></code></li>
+<li><code class="docutils literal"><span class="pre">www.example.com.cert.pem</span></code></li>
+</ul>
+<p>If you’re signing a CSR from a third-party, you don’t have access to their
+private key so you only need to give them back the chain file
+(<code class="docutils literal"><span class="pre">ca-chain.cert.pem</span></code>) and the certificate (<code class="docutils literal"><span class="pre">www.example.com.cert.pem</span></code>).</p>
+</div>
+</div>
+
+
+
+        <div class="footer">
+          <div class="comments">
+            <p>
+              <a href="https://discourse.jamielinux.com/t/openssl-certificate-authority/">Comments <span class="fa fa-fw fa-comments"></span></a>
+            </p>
+          </div>
+          <nav class="footer-nav">
+            <a href="create-the-intermediate-pair.html" class="button button-prev" title="Create the intermediate pair"><span class="fa fa-fw fa-long-arrow-left"></span> Previous</a>
+            <a href="certificate-revocation-lists.html" class="button button-next" title="Certificate revocation lists">Next <span class="fa fa-fw fa-long-arrow-right"></span></a>
+          </nav>
+
+          <div class="footer-info">
+              <p>
+              <a href="changelog.html">Version 1.0.4</a> &mdash; Last updated on 2015-12-09.
+              </p>
+            <p>
+                &copy; <a href="copyright.html">Copyright</a> 2013-2015, <a href="../../index.html">Jamie Nguyen</a>.
+              Created with Sphinx using a custom-built theme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3-right"></div>
+  </div>
+</section>
+
+<!--[if gt IE 8]><!--> <script src="../../js/uakari.2d61aaf.js"></script> <!--<![endif]-->
+
+</body>
+</html>

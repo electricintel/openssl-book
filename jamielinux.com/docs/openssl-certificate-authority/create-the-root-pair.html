@@ -1,0 +1,439 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin">
+
+  <meta name="author" content="Jamie Nguyen">
+  <title>Create the root pair &mdash; OpenSSL Certificate Authority &mdash; Jamie Nguyen</title>
+  <meta name="date" content="2015-12-09" />
+
+  <link rel="stylesheet" href="../../css/uakari.274dc1e.css" />
+  <link rel="copyright" title="Copyright" href="copyright.html" />
+  <link rel="next" title="Create the intermediate pair" href="create-the-intermediate-pair.html" />
+  <link rel="prev" title="Introduction" href="introduction.html" /> 
+
+  <!--[if lt IE 9]>
+  <script src="/js/html5shiv-3.7.2.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<nav id="nav">
+  <div id="nav-header">
+    <div id="nav-title">
+      <a class="fa-book" href="index.html">OpenSSL Certificate Authority</a>
+    </div>
+    <div id="nav-toggle">
+      <span id="toggle-menu" class="fa fa-bars"></span>
+    </div>
+  </div>
+
+  <div id="nav-tree">
+    
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="create-the-root-pair.html">Create the root pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-key">Create the root key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">Create the root certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#verify-the-root-certificate">Verify the root certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-intermediate-pair.html">Create the intermediate pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-key">Create the intermediate key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate">Create the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#verify-the-intermediate-certificate">Verify the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-certificate-chain-file">Create the certificate chain file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sign-server-and-client-certificates.html">Sign server and client certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-key">Create a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-certificate">Create a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#verify-the-certificate">Verify the certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#deploy-the-certificate">Deploy the certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="certificate-revocation-lists.html">Certificate revocation lists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#create-the-crl">Create the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#revoke-a-certificate">Revoke a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#server-side-use-of-the-crl">Server-side use of the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#client-side-use-of-the-crl">Client-side use of the CRL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="online-certificate-status-protocol.html">Online Certificate Status Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#create-the-ocsp-pair">Create the OCSP pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#revoke-a-certificate">Revoke a certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/root-configuration-file.html">Root CA configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendix/intermediate-configuration-file.html">Intermediate CA configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+<section id="content">
+  <div class="grid-3">
+    <div class="grid-3-left"></div>
+
+    <div class="grid-3-center">
+      <div class="content-inner">
+  <div class="section" id="create-the-root-pair">
+<h1>Create the root pair<a class="headerlink" href="create-the-root-pair.html#create-the-root-pair" title="Permalink to this headline">¶</a></h1>
+<p>Acting as a certificate authority (CA) means dealing with cryptographic pairs of
+private keys and public certificates. The very first cryptographic pair we’ll
+create is the root pair. This consists of the root key (<code class="docutils literal"><span class="pre">ca.key.pem</span></code>) and root
+certificate (<code class="docutils literal"><span class="pre">ca.cert.pem</span></code>). This pair forms the identity of your CA.</p>
+<p>Typically, the root CA does not sign server or client certificates directly. The
+root CA is only ever used to create one or more intermediate CAs, which are
+trusted by the root CA to sign certificates on their behalf. This is best
+practice. It allows the root key to be kept offline and unused as much as
+possible, as any compromise of the root key is disastrous.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It’s best practice to create the root pair in a secure environment.
+Ideally, this should be on a fully encrypted, air gapped computer that is
+permanently isolated from the Internet. Remove the wireless card and fill
+the ethernet port with glue.</p>
+</div>
+<div class="section" id="prepare-the-directory">
+<h2>Prepare the directory<a class="headerlink" href="create-the-root-pair.html#prepare-the-directory" title="Permalink to this headline">¶</a></h2>
+<p>Choose a directory (<code class="docutils literal"><span class="pre">/root/ca</span></code>) to store all keys and certificates.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">mkdir</span> <span class="sx">/root/ca</span><span class="go"></span>
+</pre></div>
+</div>
+<p>Create the directory structure. The <code class="docutils literal"><span class="pre">index.txt</span></code> and <code class="docutils literal"><span class="pre">serial</span></code> files act as a
+flat file database to keep track of signed certificates.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">mkdir</span> certs crl newcerts private<span class="go"></span>
+<span class="gp"># </span><span class="gs">chmod</span> <span class="m">700</span> private<span class="go"></span>
+<span class="gp"># </span><span class="gs">touch</span> index.txt<span class="go"></span>
+<span class="gp"># </span><span class="gs">echo</span> <span class="m">1000</span> <span class="o">&gt;</span> serial<span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="prepare-the-configuration-file">
+<h2>Prepare the configuration file<a class="headerlink" href="create-the-root-pair.html#prepare-the-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>You must create a configuration file for OpenSSL to use. Copy the root CA
+configuration file from the <a class="reference internal" href="appendix/root-configuration-file.html"><em>Appendix</em></a>
+to <code class="docutils literal"><span class="pre">/root/ca/openssl.cnf</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">[</span> <span class="pre">ca</span> <span class="pre">]</span></code> section is mandatory. Here we tell OpenSSL to use the options
+from the <code class="docutils literal"><span class="pre">[</span> <span class="pre">CA_default</span> <span class="pre">]</span></code> section.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> ca <span class="o">]</span>
+<span class="c"># `man ca`</span>
+<span class="nv">default_ca</span> <span class="o">=</span> CA_default
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">[</span> <span class="pre">CA_default</span> <span class="pre">]</span></code> section contains a range of defaults. Make sure you
+declare the directory you chose earlier (<code class="docutils literal"><span class="pre">/root/ca</span></code>).</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> CA_default <span class="o">]</span>
+<span class="c"># Directory and file locations.</span>
+<span class="nv">dir</span>               <span class="o">=</span> <span class="sx">/root/ca</span>
+<span class="nv">certs</span>             <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/certs</span>
+<span class="nv">crl_dir</span>           <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/crl</span>
+<span class="nv">new_certs_dir</span>     <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/newcerts</span>
+<span class="nv">database</span>          <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/index.txt</span>
+<span class="nv">serial</span>            <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/serial</span>
+<span class="nv">RANDFILE</span>          <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/private/.rand</span>
+
+<span class="c"># The root key and root certificate.</span>
+<span class="nv">private_key</span>       <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/private/ca.key.pem</span>
+<span class="nv">certificate</span>       <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/certs/ca.cert.pem</span>
+
+<span class="c"># For certificate revocation lists.</span>
+<span class="nv">crlnumber</span>         <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/crlnumber</span>
+<span class="nv">crl</span>               <span class="o">=</span> <span class="nv">$dir</span><span class="sx">/crl/ca.crl.pem</span>
+<span class="nv">crl_extensions</span>    <span class="o">=</span> crl_ext
+<span class="nv">default_crl_days</span>  <span class="o">=</span> 30
+
+<span class="c"># SHA-1 is deprecated, so use SHA-2 instead.</span>
+<span class="nv">default_md</span>        <span class="o">=</span> sha256
+
+<span class="nv">name_opt</span>          <span class="o">=</span> ca_default
+<span class="nv">cert_opt</span>          <span class="o">=</span> ca_default
+<span class="nv">default_days</span>      <span class="o">=</span> 375
+<span class="nv">preserve</span>          <span class="o">=</span> no
+<span class="nv">policy</span>            <span class="o">=</span> policy_strict
+</pre></div>
+</div>
+<p>We’ll apply <code class="docutils literal"><span class="pre">policy_strict</span></code> for all root CA signatures, as the root CA is
+only being used to create intermediate CAs.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> policy_strict <span class="o">]</span>
+<span class="c"># The root CA should only sign intermediate certificates that match.</span>
+<span class="c"># See the POLICY FORMAT section of `man ca`.</span>
+<span class="nv">countryName</span>             <span class="o">=</span> match
+<span class="nv">stateOrProvinceName</span>     <span class="o">=</span> match
+<span class="nv">organizationName</span>        <span class="o">=</span> match
+<span class="nv">organizationalUnitName</span>  <span class="o">=</span> optional
+<span class="nv">commonName</span>              <span class="o">=</span> supplied
+<span class="nv">emailAddress</span>            <span class="o">=</span> optional
+</pre></div>
+</div>
+<p>We’ll apply <code class="docutils literal"><span class="pre">policy_loose</span></code> for all intermediate CA signatures, as the
+intermediate CA is signing server and client certificates that may come from a
+variety of third-parties.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> policy_loose <span class="o">]</span>
+<span class="c"># Allow the intermediate CA to sign a more diverse range of certificates.</span>
+<span class="c"># See the POLICY FORMAT section of the `ca` man page.</span>
+<span class="nv">countryName</span>             <span class="o">=</span> optional
+<span class="nv">stateOrProvinceName</span>     <span class="o">=</span> optional
+<span class="nv">localityName</span>            <span class="o">=</span> optional
+<span class="nv">organizationName</span>        <span class="o">=</span> optional
+<span class="nv">organizationalUnitName</span>  <span class="o">=</span> optional
+<span class="nv">commonName</span>              <span class="o">=</span> supplied
+<span class="nv">emailAddress</span>            <span class="o">=</span> optional
+</pre></div>
+</div>
+<p>Options from the <code class="docutils literal"><span class="pre">[</span> <span class="pre">req</span> <span class="pre">]</span></code> section are applied when creating certificates or
+certificate signing requests.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> req <span class="o">]</span>
+<span class="c"># Options for the `req` tool (`man req`).</span>
+<span class="nv">default_bits</span>        <span class="o">=</span> 2048
+<span class="nv">distinguished_name</span>  <span class="o">=</span> req_distinguished_name
+<span class="nv">string_mask</span>         <span class="o">=</span> utf8only
+
+<span class="c"># SHA-1 is deprecated, so use SHA-2 instead.</span>
+<span class="nv">default_md</span>          <span class="o">=</span> sha256
+
+<span class="c"># Extension to add when the -x509 option is used.</span>
+<span class="nv">x509_extensions</span>     <span class="o">=</span> v3_ca
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">[</span> <span class="pre">req_distinguished_name</span> <span class="pre">]</span></code> section declares the information normally
+required in a certificate signing request. You can optionally specify some
+defaults.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> req_distinguished_name <span class="o">]</span>
+<span class="c"># See &lt;https://en.wikipedia.org/wiki/Certificate_signing_request&gt;.</span>
+<span class="nv">countryName</span>                     <span class="o">=</span> Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span>
+<span class="nv">stateOrProvinceName</span>             <span class="o">=</span> State or Province Name
+<span class="nv">localityName</span>                    <span class="o">=</span> Locality Name
+0.organizationName              <span class="o">=</span> Organization Name
+<span class="nv">organizationalUnitName</span>          <span class="o">=</span> Organizational Unit Name
+<span class="nv">commonName</span>                      <span class="o">=</span> Common Name
+<span class="nv">emailAddress</span>                    <span class="o">=</span> Email Address
+
+<span class="c"># Optionally, specify some defaults.</span>
+<span class="nv">countryName_default</span>             <span class="o">=</span> GB
+<span class="nv">stateOrProvinceName_default</span>     <span class="o">=</span> England
+<span class="nv">localityName_default</span>            <span class="o">=</span>
+0.organizationName_default      <span class="o">=</span> Alice Ltd
+<span class="c">#organizationalUnitName_default =</span>
+<span class="c">#emailAddress_default           =</span>
+</pre></div>
+</div>
+<p>The next few sections are extensions that can be applied when signing
+certificates. For example, passing the <code class="docutils literal"><span class="pre">-extensions</span> <span class="pre">v3_ca</span></code> command-line
+argument will apply the options set in <code class="docutils literal"><span class="pre">[</span> <span class="pre">v3_ca</span> <span class="pre">]</span></code>.</p>
+<p>We’ll apply the <code class="docutils literal"><span class="pre">v3_ca</span></code> extension when we <a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">create the root certificate</a>.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> v3_ca <span class="o">]</span>
+<span class="c"># Extensions for a typical CA (`man x509v3_config`).</span>
+<span class="nv">subjectKeyIdentifier</span> <span class="o">=</span> <span class="nb">hash</span>
+<span class="nv">authorityKeyIdentifier</span> <span class="o">=</span> keyid:always,issuer
+<span class="nv">basicConstraints</span> <span class="o">=</span> critical, CA:true
+<span class="nv">keyUsage</span> <span class="o">=</span> critical, digitalSignature, cRLSign, keyCertSign
+</pre></div>
+</div>
+<p>We’ll apply the <code class="docutils literal"><span class="pre">v3_ca_intermediate</span></code> extension when we <a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate"><span>create the
+intermediate certificate</span></a>. <code class="docutils literal"><span class="pre">pathlen:0</span></code>
+ensures that there can be no further certificate authorities below the
+intermediate CA.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> v3_intermediate_ca <span class="o">]</span>
+<span class="c"># Extensions for a typical intermediate CA (`man x509v3_config`).</span>
+<span class="nv">subjectKeyIdentifier</span> <span class="o">=</span> <span class="nb">hash</span>
+<span class="nv">authorityKeyIdentifier</span> <span class="o">=</span> keyid:always,issuer
+<span class="nv">basicConstraints</span> <span class="o">=</span> critical, CA:true, pathlen:0
+<span class="nv">keyUsage</span> <span class="o">=</span> critical, digitalSignature, cRLSign, keyCertSign
+</pre></div>
+</div>
+<p>We’ll apply the <code class="docutils literal"><span class="pre">usr_cert</span></code> extension when signing client certificates, such
+as those used for remote user authentication.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> usr_cert <span class="o">]</span>
+<span class="c"># Extensions for client certificates (`man x509v3_config`).</span>
+<span class="nv">basicConstraints</span> <span class="o">=</span> CA:FALSE
+<span class="nv">nsCertType</span> <span class="o">=</span> client, email
+<span class="nv">nsComment</span> <span class="o">=</span> <span class="s2">&quot;OpenSSL Generated Client Certificate&quot;</span>
+<span class="nv">subjectKeyIdentifier</span> <span class="o">=</span> <span class="nb">hash</span>
+<span class="nv">authorityKeyIdentifier</span> <span class="o">=</span> keyid,issuer
+<span class="nv">keyUsage</span> <span class="o">=</span> critical, nonRepudiation, digitalSignature, keyEncipherment
+<span class="nv">extendedKeyUsage</span> <span class="o">=</span> clientAuth, emailProtection
+</pre></div>
+</div>
+<p>We’ll apply the <code class="docutils literal"><span class="pre">server_cert</span></code> extension when signing server certificates,
+such as those used for web servers.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> server_cert <span class="o">]</span>
+<span class="c"># Extensions for server certificates (`man x509v3_config`).</span>
+<span class="nv">basicConstraints</span> <span class="o">=</span> CA:FALSE
+<span class="nv">nsCertType</span> <span class="o">=</span> server
+<span class="nv">nsComment</span> <span class="o">=</span> <span class="s2">&quot;OpenSSL Generated Server Certificate&quot;</span>
+<span class="nv">subjectKeyIdentifier</span> <span class="o">=</span> <span class="nb">hash</span>
+<span class="nv">authorityKeyIdentifier</span> <span class="o">=</span> keyid,issuer:always
+<span class="nv">keyUsage</span> <span class="o">=</span> critical, digitalSignature, keyEncipherment
+<span class="nv">extendedKeyUsage</span> <span class="o">=</span> serverAuth
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">crl_ext</span></code> extension is automatically applied when creating
+<a class="reference internal" href="certificate-revocation-lists.html"><em>certificate revocation lists</em></a>.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> crl_ext <span class="o">]</span>
+<span class="c"># Extension for CRLs (`man x509v3_config`).</span>
+<span class="nv">authorityKeyIdentifier</span><span class="o">=</span>keyid:always
+</pre></div>
+</div>
+<p>We’ll apply the <code class="docutils literal"><span class="pre">ocsp</span></code> extension when signing the <a class="reference internal" href="online-certificate-status-protocol.html"><em>Online Certificate
+Status Protocol (OCSP)</em></a> certificate.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> ocsp <span class="o">]</span>
+<span class="c"># Extension for OCSP signing certificates (`man ocsp`).</span>
+<span class="nv">basicConstraints</span> <span class="o">=</span> CA:FALSE
+<span class="nv">subjectKeyIdentifier</span> <span class="o">=</span> <span class="nb">hash</span>
+<span class="nv">authorityKeyIdentifier</span> <span class="o">=</span> keyid,issuer
+<span class="nv">keyUsage</span> <span class="o">=</span> critical, digitalSignature
+<span class="nv">extendedKeyUsage</span> <span class="o">=</span> critical, OCSPSigning
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-the-root-key">
+<h2>Create the root key<a class="headerlink" href="create-the-root-pair.html#create-the-root-key" title="Permalink to this headline">¶</a></h2>
+<p>Create the root key (<code class="docutils literal"><span class="pre">ca.key.pem</span></code>) and keep it absolutely secure. Anyone in
+possession of the root key can issue trusted certificates. Encrypt the root key
+with AES 256-bit encryption and a strong password.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Use 4096 bits for all root and intermediate certificate authority keys.
+You’ll still be able to sign server and client certificates of a shorter
+length.</p>
+</div>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> genrsa -aes256 -out private/ca.key.pem <span class="m">4096</span><span class="go"></span>
+
+<span class="go">Enter pass phrase for ca.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">Verifying - Enter pass phrase for ca.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+
+<span class="gp"># </span><span class="gs">chmod</span> <span class="m">400</span> private/ca.key.pem<span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-the-root-certificate">
+<h2>Create the root certificate<a class="headerlink" href="create-the-root-pair.html#create-the-root-certificate" title="Permalink to this headline">¶</a></h2>
+<p>Use the root key (<code class="docutils literal"><span class="pre">ca.key.pem</span></code>) to create a root certificate (<code class="docutils literal"><span class="pre">ca.cert.pem</span></code>).
+Give the root certificate a long expiry date, such as twenty years. Once the
+root certificate expires, all certificates signed by the CA become invalid.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Whenever you use the <code class="docutils literal"><span class="pre">req</span></code> tool, you must specify a configuration file to
+use with the <code class="docutils literal"><span class="pre">-config</span></code> option, otherwise OpenSSL will default to
+<code class="docutils literal"><span class="pre">/etc/pki/tls/openssl.cnf</span></code>.</p>
+</div>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> req -config openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -key private/ca.key.pem <span class="ow">\</span><span class="go"></span>
+      -new -x509 -days <span class="m">7300</span> -sha256 -extensions v3_ca <span class="ow">\</span><span class="go"></span>
+      -out certs/ca.cert.pem<span class="go"></span>
+
+<span class="go">Enter pass phrase for ca.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">You are about to be asked to enter information that will be incorporated</span>
+<span class="go">into your certificate request.</span>
+<span class="go">-----</span>
+<span class="go">Country Name (2 letter code) [XX]:</span><span class="s">GB</span><span class="go"></span>
+<span class="go">State or Province Name []:</span><span class="s">England</span><span class="go"></span>
+<span class="go">Locality Name []:</span>
+<span class="go">Organization Name []:</span><span class="s">Alice Ltd</span><span class="go"></span>
+<span class="go">Organizational Unit Name []:</span><span class="s">Alice Ltd Certificate Authority</span><span class="go"></span>
+<span class="go">Common Name []:</span><span class="s">Alice Ltd Root CA</span><span class="go"></span>
+<span class="go">Email Address []:</span>
+
+<span class="gp"># </span><span class="gs">chmod</span> <span class="m">444</span> certs/ca.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="verify-the-root-certificate">
+<h2>Verify the root certificate<a class="headerlink" href="create-the-root-pair.html#verify-the-root-certificate" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> x509 -noout -text -in certs/ca.cert.pem<span class="go"></span>
+</pre></div>
+</div>
+<p>The output shows:</p>
+<ul class="simple">
+<li>the <code class="docutils literal"><span class="pre">Signature</span> <span class="pre">Algorithm</span></code> used</li>
+<li>the dates of certificate <code class="docutils literal"><span class="pre">Validity</span></code></li>
+<li>the <code class="docutils literal"><span class="pre">Public-Key</span></code> bit length</li>
+<li>the <code class="docutils literal"><span class="pre">Issuer</span></code>, which is the entity that signed the certificate</li>
+<li>the <code class="docutils literal"><span class="pre">Subject</span></code>, which refers to the certificate itself</li>
+</ul>
+<p>The <code class="docutils literal"><span class="pre">Issuer</span></code> and <code class="docutils literal"><span class="pre">Subject</span></code> are identical as the certificate is self-signed.
+Note that all root certificates are self-signed.</p>
+<div class="highlight-text"><div class="highlight"><pre>Signature Algorithm: sha256WithRSAEncryption
+    Issuer: C=GB, ST=England,
+            O=Alice Ltd, OU=Alice Ltd Certificate Authority,
+            CN=Alice Ltd Root CA
+    Validity
+        Not Before: Apr 11 12:22:58 2015 GMT
+        Not After : Apr  6 12:22:58 2035 GMT
+    Subject: C=GB, ST=England,
+             O=Alice Ltd, OU=Alice Ltd Certificate Authority,
+             CN=Alice Ltd Root CA
+    Subject Public Key Info:
+        Public Key Algorithm: rsaEncryption
+            Public-Key: (4096 bit)
+</pre></div>
+</div>
+<p>The output also shows the <strong>X509v3 extensions</strong>. We applied the <code class="docutils literal"><span class="pre">v3_ca</span></code>
+extension, so the options from <code class="docutils literal"><span class="pre">[</span> <span class="pre">v3_ca</span> <span class="pre">]</span></code> should be reflected in the
+output.</p>
+<div class="highlight-text"><div class="highlight"><pre>X509v3 extensions:
+    X509v3 Subject Key Identifier:
+        38:58:29:2F:6B:57:79:4F:39:FD:32:35:60:74:92:60:6E:E8:2A:31
+    X509v3 Authority Key Identifier:
+        keyid:38:58:29:2F:6B:57:79:4F:39:FD:32:35:60:74:92:60:6E:E8:2A:31
+
+    X509v3 Basic Constraints: critical
+        CA:TRUE
+    X509v3 Key Usage: critical
+        Digital Signature, Certificate Sign, CRL Sign
+</pre></div>
+</div>
+</div>
+</div>
+
+
+
+        <div class="footer">
+          <div class="comments">
+            <p>
+              <a href="https://discourse.jamielinux.com/t/openssl-certificate-authority/">Comments <span class="fa fa-fw fa-comments"></span></a>
+            </p>
+          </div>
+          <nav class="footer-nav">
+            <a href="introduction.html" class="button button-prev" title="Introduction"><span class="fa fa-fw fa-long-arrow-left"></span> Previous</a>
+            <a href="create-the-intermediate-pair.html" class="button button-next" title="Create the intermediate pair">Next <span class="fa fa-fw fa-long-arrow-right"></span></a>
+          </nav>
+
+          <div class="footer-info">
+              <p>
+              <a href="changelog.html">Version 1.0.4</a> &mdash; Last updated on 2015-12-09.
+              </p>
+            <p>
+                &copy; <a href="copyright.html">Copyright</a> 2013-2015, <a href="../../index.html">Jamie Nguyen</a>.
+              Created with Sphinx using a custom-built theme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3-right"></div>
+  </div>
+</section>
+
+<!--[if gt IE 8]><!--> <script src="../../js/uakari.2d61aaf.js"></script> <!--<![endif]-->
+
+</body>
+</html>

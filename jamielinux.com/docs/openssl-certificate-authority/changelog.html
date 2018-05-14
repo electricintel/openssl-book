@@ -1,0 +1,131 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin">
+
+  <meta name="author" content="Jamie Nguyen">
+  <title>ChangeLog &mdash; OpenSSL Certificate Authority &mdash; Jamie Nguyen</title>
+  <meta name="date" content="2015-12-09" />
+
+  <link rel="stylesheet" href="../../css/uakari.274dc1e.css" />
+  <link rel="copyright" title="Copyright" href="copyright.html" /> 
+
+  <!--[if lt IE 9]>
+  <script src="/js/html5shiv-3.7.2.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<nav id="nav">
+  <div id="nav-header">
+    <div id="nav-title">
+      <a class="fa-book" href="index.html">OpenSSL Certificate Authority</a>
+    </div>
+    <div id="nav-toggle">
+      <span id="toggle-menu" class="fa fa-bars"></span>
+    </div>
+  </div>
+
+  <div id="nav-tree">
+    
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-root-pair.html">Create the root pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-key">Create the root key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">Create the root certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#verify-the-root-certificate">Verify the root certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-intermediate-pair.html">Create the intermediate pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-key">Create the intermediate key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate">Create the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#verify-the-intermediate-certificate">Verify the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-certificate-chain-file">Create the certificate chain file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sign-server-and-client-certificates.html">Sign server and client certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-key">Create a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-certificate">Create a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#verify-the-certificate">Verify the certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#deploy-the-certificate">Deploy the certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="certificate-revocation-lists.html">Certificate revocation lists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#create-the-crl">Create the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#revoke-a-certificate">Revoke a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#server-side-use-of-the-crl">Server-side use of the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#client-side-use-of-the-crl">Client-side use of the CRL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="online-certificate-status-protocol.html">Online Certificate Status Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#create-the-ocsp-pair">Create the OCSP pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#revoke-a-certificate">Revoke a certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/root-configuration-file.html">Root CA configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendix/intermediate-configuration-file.html">Intermediate CA configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+<section id="content">
+  <div class="grid-3">
+    <div class="grid-3-left"></div>
+
+    <div class="grid-3-center">
+      <div class="content-inner">
+  <div class="section" id="changelog">
+<h1>ChangeLog<a class="headerlink" href="changelog.html#changelog" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>1.0.0 (1st June, 2015)<ul>
+<li>This guide was originally a series of four blog posts published in 2013.
+This is the first release as a standalone document and includes numerous
+amendments, improvements and additions.</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+        <div class="footer">
+          <div class="comments">
+            <p>
+              <a href="https://discourse.jamielinux.com/t/openssl-certificate-authority/">Comments <span class="fa fa-fw fa-comments"></span></a>
+            </p>
+          </div>
+
+          <div class="footer-info">
+              <p>
+              <a href="changelog.html#">Version 1.0.4</a> &mdash; Last updated on 2015-12-09.
+              </p>
+            <p>
+                &copy; <a href="copyright.html">Copyright</a> 2013-2015, <a href="../../index.html">Jamie Nguyen</a>.
+              Created with Sphinx using a custom-built theme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3-right"></div>
+  </div>
+</section>
+
+<!--[if gt IE 8]><!--> <script src="../../js/uakari.2d61aaf.js"></script> <!--<![endif]-->
+
+</body>
+</html>

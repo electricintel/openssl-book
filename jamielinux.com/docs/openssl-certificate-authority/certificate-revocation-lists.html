@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin">
+
+  <meta name="author" content="Jamie Nguyen">
+  <title>Certificate revocation lists &mdash; OpenSSL Certificate Authority &mdash; Jamie Nguyen</title>
+  <meta name="date" content="2015-12-09" />
+
+  <link rel="stylesheet" href="../../css/uakari.274dc1e.css" />
+  <link rel="copyright" title="Copyright" href="copyright.html" />
+  <link rel="next" title="Online Certificate Status Protocol" href="online-certificate-status-protocol.html" />
+  <link rel="prev" title="Sign server and client certificates" href="sign-server-and-client-certificates.html" /> 
+
+  <!--[if lt IE 9]>
+  <script src="/js/html5shiv-3.7.2.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<nav id="nav">
+  <div id="nav-header">
+    <div id="nav-title">
+      <a class="fa-book" href="index.html">OpenSSL Certificate Authority</a>
+    </div>
+    <div id="nav-toggle">
+      <span id="toggle-menu" class="fa fa-bars"></span>
+    </div>
+  </div>
+
+  <div id="nav-tree">
+    
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-root-pair.html">Create the root pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-key">Create the root key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#create-the-root-certificate">Create the root certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-root-pair.html#verify-the-root-certificate">Verify the root certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create-the-intermediate-pair.html">Create the intermediate pair</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#prepare-the-directory">Prepare the directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-key">Create the intermediate key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-intermediate-certificate">Create the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#verify-the-intermediate-certificate">Verify the intermediate certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-the-intermediate-pair.html#create-the-certificate-chain-file">Create the certificate chain file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sign-server-and-client-certificates.html">Sign server and client certificates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-key">Create a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#create-a-certificate">Create a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#verify-the-certificate">Verify the certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sign-server-and-client-certificates.html#deploy-the-certificate">Deploy the certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="certificate-revocation-lists.html">Certificate revocation lists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#create-the-crl">Create the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#revoke-a-certificate">Revoke a certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#server-side-use-of-the-crl">Server-side use of the CRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="certificate-revocation-lists.html#client-side-use-of-the-crl">Client-side use of the CRL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="online-certificate-status-protocol.html">Online Certificate Status Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#prepare-the-configuration-file">Prepare the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#create-the-ocsp-pair">Create the OCSP pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="online-certificate-status-protocol.html#revoke-a-certificate">Revoke a certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/root-configuration-file.html">Root CA configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendix/intermediate-configuration-file.html">Intermediate CA configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+<section id="content">
+  <div class="grid-3">
+    <div class="grid-3-left"></div>
+
+    <div class="grid-3-center">
+      <div class="content-inner">
+  <div class="section" id="certificate-revocation-lists">
+<h1>Certificate revocation lists<a class="headerlink" href="certificate-revocation-lists.html#certificate-revocation-lists" title="Permalink to this headline">¶</a></h1>
+<p>A certificate revocation list (CRL) provides a list of certificates that have
+been revoked. A client application, such as a web browser, can use a CRL to
+check a server’s authenticity. A server application, such as Apache or OpenVPN,
+can use a CRL to deny access to clients that are no longer trusted.</p>
+<p>Publish the CRL at a publicly accessible location (eg,
+<code class="docutils literal"><span class="pre">http://example.com/intermediate.crl.pem</span></code>). Third-parties can fetch the CRL
+from this location to check whether any certificates they rely on have been
+revoked.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Some applications vendors have deprecated CRLs and are instead using
+the <a class="reference internal" href="online-certificate-status-protocol.html"><em>Online Certificate Status Protocol (OCSP)</em></a>.</p>
+</div>
+<div class="section" id="prepare-the-configuration-file">
+<h2>Prepare the configuration file<a class="headerlink" href="certificate-revocation-lists.html#prepare-the-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>When a certificate authority signs a certificate, it will normally encode the
+CRL location into the certificate. Add <code class="docutils literal"><span class="pre">crlDistributionPoints</span></code> to the
+appropriate sections. In our case, add it to the <code class="docutils literal"><span class="pre">[</span> <span class="pre">server_cert</span> <span class="pre">]</span></code> section.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="o">[</span> server_cert <span class="o">]</span>
+<span class="c"># ... snipped ...</span>
+<span class="nv">crlDistributionPoints</span> <span class="o">=</span> URI:http://example.com/intermediate.crl.pem
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-the-crl">
+<span id="re-create-the-crl"></span><h2>Create the CRL<a class="headerlink" href="certificate-revocation-lists.html#create-the-crl" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -gencrl -out intermediate/crl/intermediate.crl.pem<span class="go"></span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">CRL</span> <span class="pre">OPTIONS</span></code> section of the <code class="docutils literal"><span class="pre">ca</span></code> man page contains more information
+on how to create CRLs.</p>
+</div>
+<p>You can check the contents of the CRL with the <code class="docutils literal"><span class="pre">crl</span></code> tool.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> crl -in intermediate/crl/intermediate.crl.pem -noout -text<span class="go"></span>
+</pre></div>
+</div>
+<p>No certificates have been revoked yet, so the output will state <code class="docutils literal"><span class="pre">No</span> <span class="pre">Revoked</span>
+<span class="pre">Certificates</span></code>.</p>
+<p>You should re-create the CRL at regular intervals. By default, the CRL expires
+after 30 days. This is controlled by the <code class="docutils literal"><span class="pre">default_crl_days</span></code> option in the
+<code class="docutils literal"><span class="pre">[</span> <span class="pre">CA_default</span> <span class="pre">]</span></code> section.</p>
+</div>
+<div class="section" id="revoke-a-certificate">
+<h2>Revoke a certificate<a class="headerlink" href="certificate-revocation-lists.html#revoke-a-certificate" title="Permalink to this headline">¶</a></h2>
+<p>Let’s walk through an example. Alice is running the Apache web server and has a
+private folder of heart-meltingly cute kitten pictures. Alice wants to grant her
+friend, Bob, access to this collection.</p>
+<p>Bob creates a private key and certificate signing request (CSR).</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$ </span><span class="gs">cd</span> <span class="sx">/home/bob</span><span class="go"></span>
+<span class="gp">$ </span><span class="gs">openssl</span> genrsa -out bob@example.com.key.pem <span class="m">2048</span><span class="go"></span>
+<span class="gp">$ </span><span class="gs">openssl</span> req -new -key bob@example.com.key.pem <span class="ow">\</span><span class="go"></span>
+      -out bob@example.com.csr.pem<span class="go"></span>
+
+<span class="go">You are about to be asked to enter information that will be incorporated</span>
+<span class="go">into your certificate request.</span>
+<span class="go">-----</span>
+<span class="go">Country Name [XX]:</span><span class="s">US</span><span class="go"></span>
+<span class="go">State or Province Name []:</span><span class="s">California</span><span class="go"></span>
+<span class="go">Locality Name []:</span><span class="s">San Francisco</span><span class="go"></span>
+<span class="go">Organization Name []:</span><span class="s">Bob Ltd</span><span class="go"></span>
+<span class="go">Organizational Unit Name []:</span>
+<span class="go">Common Name []:</span><span class="s">bob@example.com</span><span class="go"></span>
+<span class="go">Email Address []:</span>
+</pre></div>
+</div>
+<p>Bob sends his CSR to Alice, who then signs it.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -extensions usr_cert -notext -md sha256 <span class="ow">\</span><span class="go"></span>
+      -in intermediate/csr/bob@example.com.csr.pem <span class="ow">\</span><span class="go"></span>
+      -out intermediate/certs/bob@example.com.cert.pem<span class="go"></span>
+
+<span class="go">Sign the certificate? [y/n]:</span><span class="s"> y</span><span class="go"></span>
+<span class="go">1 out of 1 certificate requests certified, commit? [y/n]:</span><span class="s"> y</span><span class="go"></span>
+</pre></div>
+</div>
+<p>Alice verifies that the certificate is valid:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> verify -CAfile intermediate/certs/ca-chain.cert.pem <span class="ow">\</span><span class="go"></span>
+      intermediate/certs/bob@example.com.cert.pem<span class="go"></span>
+
+<span class="go">bob@example.com.cert.pem:</span><span class="s"> OK</span><span class="go"></span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">index.txt</span></code> file should contain a new entry.</p>
+<div class="highlight-text"><div class="highlight"><pre>V 160420124740Z 1001 unknown ... /CN=bob@example.com
+</pre></div>
+</div>
+<p>Alice sends Bob the signed certificate. Bob installs the certificate in his web
+browser and is now able to access Alice’s kitten pictures. Hurray!</p>
+<p>Sadly, it turns out that Bob is misbehaving. Bob has posted Alice’s kitten
+pictures to Hacker News, claiming that they’re his own and gaining huge
+popularity. Alice finds out and needs to revoke his access immediately.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">cd</span> <span class="sx">/root/ca</span><span class="go"></span>
+<span class="gp"># </span><span class="gs">openssl</span> ca -config intermediate/openssl.cnf <span class="ow">\</span><span class="go"></span>
+      -revoke intermediate/certs/bob@example.com.cert.pem<span class="go"></span>
+
+<span class="go">Enter pass phrase for intermediate.key.pem:</span><span class="s"> secretpassword</span><span class="go"></span>
+<span class="go">Revoking Certificate 1001.</span>
+<span class="go">Data Base Updated</span>
+</pre></div>
+</div>
+<p>The line in <code class="docutils literal"><span class="pre">index.txt</span></code> that corresponds to Bob’s certificate now begins with
+the character <code class="docutils literal"><span class="pre">R</span></code>. This means the certificate has been revoked.</p>
+<div class="highlight-text"><div class="highlight"><pre>R 160420124740Z 150411125310Z 1001 unknown ... /CN=bob@example.com
+</pre></div>
+</div>
+<p>After revoking Bob’s certificate, Alice must <a class="reference internal" href="certificate-revocation-lists.html#re-create-the-crl">re-create the CRL</a>.</p>
+</div>
+<div class="section" id="server-side-use-of-the-crl">
+<h2>Server-side use of the CRL<a class="headerlink" href="certificate-revocation-lists.html#server-side-use-of-the-crl" title="Permalink to this headline">¶</a></h2>
+<p>For client certificates, it’s typically a server-side application (eg, Apache)
+that is doing the verification. This application needs to have local access to
+the CRL.</p>
+<p>In Alice’s case, she can add the <code class="docutils literal"><span class="pre">SSLCARevocationPath</span></code> directive to her Apache
+configuration and copy the CRL to her web server. The next time that Bob
+connects to the web server, Apache will check his client certificate against the
+CRL and deny access.</p>
+<p>Similarly, OpenVPN has a <code class="docutils literal"><span class="pre">crl-verify</span></code> directive so that it can block clients
+that have had their certificates revoked.</p>
+</div>
+<div class="section" id="client-side-use-of-the-crl">
+<span id="publish-the-crl"></span><h2>Client-side use of the CRL<a class="headerlink" href="certificate-revocation-lists.html#client-side-use-of-the-crl" title="Permalink to this headline">¶</a></h2>
+<p>For server certificates, it’s typically a client-side application (eg, a web
+browser) that performs the verification. This application must have remote
+access to the CRL.</p>
+<p>If a certificate was signed with an extension that includes
+<code class="docutils literal"><span class="pre">crlDistributionPoints</span></code>, a client-side application can read this information
+and fetch the CRL from the specified location.</p>
+<p>The CRL distribution points are visible in the certificate <strong>X509v3</strong> details.</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp"># </span><span class="gs">openssl</span> x509 -in cute-kitten-pictures.example.com.cert.pem -noout -text<span class="go"></span>
+
+    X509v3 CRL Distribution Points:<span class="go"></span>
+
+        Full Name:<span class="go"></span>
+          URI:http://example.com/intermediate.crl.pem<span class="go"></span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+
+        <div class="footer">
+          <div class="comments">
+            <p>
+              <a href="https://discourse.jamielinux.com/t/openssl-certificate-authority/">Comments <span class="fa fa-fw fa-comments"></span></a>
+            </p>
+          </div>
+          <nav class="footer-nav">
+            <a href="sign-server-and-client-certificates.html" class="button button-prev" title="Sign server and client certificates"><span class="fa fa-fw fa-long-arrow-left"></span> Previous</a>
+            <a href="online-certificate-status-protocol.html" class="button button-next" title="Online Certificate Status Protocol">Next <span class="fa fa-fw fa-long-arrow-right"></span></a>
+          </nav>
+
+          <div class="footer-info">
+              <p>
+              <a href="changelog.html">Version 1.0.4</a> &mdash; Last updated on 2015-12-09.
+              </p>
+            <p>
+                &copy; <a href="copyright.html">Copyright</a> 2013-2015, <a href="../../index.html">Jamie Nguyen</a>.
+              Created with Sphinx using a custom-built theme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3-right"></div>
+  </div>
+</section>
+
+<!--[if gt IE 8]><!--> <script src="../../js/uakari.2d61aaf.js"></script> <!--<![endif]-->
+
+</body>
+</html>
